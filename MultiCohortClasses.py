@@ -5,14 +5,14 @@ import SimPy.StatisticalClasses as Stat
 class MultiCohort:
     """ simulates multiple cohorts with different parameters """
 
-    def __init__(self, ids, pop_sizes, list_parameters):
+    def __init__(self, ids, pop_size, list_parameters):
         """
         :param ids: (list) of ids for cohorts to simulate
-        :param pop_sizes: (list) of population sizes of cohorts to simulate
+        :param pop_size: (int) population size of cohorts to simulate
         :param list_parameters: (list) of parameters each of which corresponds to one cohort
         """
         self.ids = ids
-        self.popSizes = pop_sizes
+        self.popSize = pop_size
         self.list_params = list_parameters
         self.multiCohortOutcomes = MultiCohortOutcomes()
 
@@ -23,7 +23,7 @@ class MultiCohort:
 
         for i in range(len(self.ids)):
             # create a cohort
-            cohort = Cohort(id=self.ids[i], pop_size=self.popSizes[i], parameters=self.list_params[i])
+            cohort = Cohort(id=self.ids[i], pop_size=self.popSize, parameters=self.list_params[i])
 
             # simulate the cohort
             cohort.simulate(sim_length=sim_length)
