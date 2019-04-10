@@ -4,7 +4,7 @@ from ParameterClasses import Therapies
 import InputData as Data
 
 
-class _Parameters:
+class Parameters:
 
     def __init__(self, therapy):
 
@@ -17,11 +17,11 @@ class _Parameters:
         self.discountRate = 0           # discount rate
 
 
-class ParametersFixed(_Parameters):
+class ParametersFixed(Parameters):
 
     def __init__(self, therapy):
 
-        _Parameters.__init__(therapy=therapy)
+        Parameters.__init__(therapy=therapy)
 
         # annual treatment cost
         if self.therapy == Therapies.MONO:
