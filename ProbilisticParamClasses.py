@@ -89,14 +89,11 @@ class ParameterGenerator:
         prob_matrix = []
         # for all health states
         for s in HealthStates:
-            # create a row populated with zeroes
-            prob_matrix.append([0] * len(HealthStates))
 
             # if the current state is death
-            if s in [HealthStates.HIV_DEATH, HealthStates.NATUAL_DEATH]:
-                # the probability of staying in this state is 1
-                prob_matrix[s.value][s.value] = 1
-            else:
+            if s not in [HealthStates.HIV_DEATH, HealthStates.NATUAL_DEATH]:
+                # create a row populated with zeroes
+                prob_matrix.append([0] * len(HealthStates))
                 # sample from the dirichlet distribution to find the transition probabilities between hiv states
                 sample = self.probMatrixRVG[s.value].sample(rng)
                 for j in range(len(sample)):
