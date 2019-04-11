@@ -107,7 +107,7 @@ class ParameterGenerator:
         elif self.therapy == Therapies.COMBO:
             # calculate transition probability matrix for the combination therapy
             param.rateMatrix = get_rate_matrix_combo(
-                rate_matrix_mono= get_rate_matrix_mono(trans_prob_matrix=prob_matrix),
+                rate_matrix_mono=get_rate_matrix_mono(trans_prob_matrix=prob_matrix),
                 combo_rr=Data.TREATMENT_RR)
 
         # sample from gamma distributions that are assumed for annual state costs

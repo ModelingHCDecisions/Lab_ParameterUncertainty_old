@@ -49,37 +49,37 @@ def print_outcomes(multi_cohort_outcomes, therapy_name):
     print("")
 
 
-def plot_survival_curves_and_histograms(sim_outcomes_mono, sim_outcomes_combo):
+def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
     """ draws the survival curves and the histograms of time until HIV deaths
-    :param sim_outcomes_mono: outcomes of a multi-cohort simulated under mono therapy
-    :param sim_outcomes_combo: outcomes of a multi-cohort simulated under combination therapy
+    :param multi_cohort_outcomes_mono: outcomes of a multi-cohort simulated under mono therapy
+    :param multi_cohort_outcomes_combo: outcomes of a multi-cohort simulated under combination therapy
     """
 
-    # get survival curves of both treatments
-    survival_curves = [
-        sim_outcomes_mono.nLivingPatients,
-        sim_outcomes_combo.nLivingPatients
-    ]
-
-    # graph survival curve
-    PathCls.graph_sample_paths(
-        sample_paths=survival_curves,
-        title='Survival curve',
-        x_label='Simulation time step (year)',
-        y_label='Number of alive patients',
-        legends=['Mono Therapy', 'Combination Therapy']
-    )
+    # # get survival curves of both treatments
+    # survival_curves = [
+    #     sim_outcomes_mono.nLivingPatients,
+    #     sim_outcomes_combo.nLivingPatients
+    # ]
+    #
+    # # graph survival curve
+    # PathCls.graph_sample_paths(
+    #     sample_paths=survival_curves,
+    #     title='Survival curve',
+    #     x_label='Simulation time step (year)',
+    #     y_label='Number of alive patients',
+    #     legends=['Mono Therapy', 'Combination Therapy']
+    # )
 
     # histograms of survival times
     set_of_survival_times = [
-        sim_outcomes_mono.survivalTimes,
-        sim_outcomes_combo.survivalTimes
+        multi_cohort_outcomes_mono.meanSurvivalTimes,
+        multi_cohort_outcomes_combo.meanSurvivalTimes
     ]
 
     # graph histograms
     Figs.graph_histograms(
         data_sets=set_of_survival_times,
-        title='Histogram of patient survival time',
+        title='Histogram of mean patient survival time',
         x_label='Survival time (year)',
         y_label='Counts',
         bin_width=1,
@@ -139,30 +139,30 @@ def print_comparative_outcomes(multi_cohort_outcomes_mono, multi_cohort_outcomes
           estimate_PI)
 
 
-def report_CEA_CBA(sim_outcomes_mono, sim_outcomes_combo):
+def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
     """ performs cost-effectiveness and cost-benefit analyses
-    :param sim_outcomes_mono: outcomes of a cohort simulated under mono therapy
-    :param sim_outcomes_combo: outcomes of a cohort simulated under combination therapy
+    :param multi_cohort_outcomes_mono: outcomes of a multi-cohort simulated under mono therapy
+    :param multi_cohort_outcomes_combo: outcomes of a multi-cohort simulated under combination therapy
     """
 
     # define two strategies
     mono_therapy_strategy = Econ.Strategy(
         name='Mono Therapy',
-        cost_obs=sim_outcomes_mono.costs,
-        effect_obs=sim_outcomes_mono.utilities,
+        cost_obs=multi_cohort_outcomes_mono.meanCosts,
+        effect_obs=multi_cohort_outcomes_mono.meanQALYs,
         color='green'
     )
     combo_therapy_strategy = Econ.Strategy(
         name='Combination Therapy',
-        cost_obs=sim_outcomes_combo.costs,
-        effect_obs=sim_outcomes_combo.utilities,
+        cost_obs=multi_cohort_outcomes_combo.meanCosts,
+        effect_obs=multi_cohort_outcomes_combo.meanQALYs,
         color='blue'
     )
 
     # do CEA
     CEA = Econ.CEA(
         strategies=[mono_therapy_strategy, combo_therapy_strategy],
-        if_paired=False
+        if_paired=True
     )
 
     # show the cost-effectiveness plane
@@ -170,7 +170,7 @@ def report_CEA_CBA(sim_outcomes_mono, sim_outcomes_combo):
 
     # report the CE table
     CEA.build_CE_table(
-        interval_type='c',
+        interval_type='p',
         alpha=D.ALPHA,
         cost_digits=0,
         effect_digits=2,
@@ -179,7 +179,7 @@ def report_CEA_CBA(sim_outcomes_mono, sim_outcomes_combo):
     # CBA
     NBA = Econ.CBA(
         strategies=[mono_therapy_strategy, combo_therapy_strategy],
-        if_paired=False
+        if_paired=True
     )
     # show the net monetary benefit figure
     NBA.graph_incremental_NMBs(
@@ -188,7 +188,7 @@ def report_CEA_CBA(sim_outcomes_mono, sim_outcomes_combo):
         title='Cost-Benefit Analysis',
         x_label='Willingness-to-pay for one additional QALY ($)',
         y_label='Incremental Net Monetary Benefit ($)',
-        interval_type='c',
+        interval_type='p',
         show_legend=True,
         figure_size=(6, 5)
     )
@@ -223,6 +223,12 @@ def show_ce_figure(CEA):
                     s=75,          # marker size
                     label=s.name    # name to show in the legend
                     )
+        # add the cloud
+        plt.scatter(s.effectObs, s.costObs,
+                    c=s.color,  # color of dots
+                    alpha=0.15,  # transparency of dots
+                    s=25,  # size of dots
+                    )
 
     plt.legend()        # show the legend
     plt.axhline(y=0, c='k', linewidth=0.5)  # horizontal line at y = 0
@@ -230,6 +236,6 @@ def show_ce_figure(CEA):
     plt.xlim([-2.5, 10])              # x-axis range
     plt.ylim([-50000, 200000])     # y-axis range
     plt.title('Cost-Effectiveness Analysis')
-    plt.xlabel('Additional discounted utility')
+    plt.xlabel('Additional discounted QALY')
     plt.ylabel('Additional discounted cost')
     plt.show()

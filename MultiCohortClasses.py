@@ -1,20 +1,37 @@
 from MarkovModelClasses import Cohort
+from ProbilisticParamClasses import ParameterGenerator
 import SimPy.StatisticalClasses as Stat
+import SimPy.RandomVariantGenerators as RVGs
 
 
 class MultiCohort:
     """ simulates multiple cohorts with different parameters """
 
-    def __init__(self, ids, pop_size, list_parameters):
+    def __init__(self, ids, pop_size, therapy):
         """
         :param ids: (list) of ids for cohorts to simulate
         :param pop_size: (int) population size of cohorts to simulate
-        :param list_parameters: (list) of parameters each of which corresponds to one cohort
+        :param therapy: selected therapy
         """
         self.ids = ids
         self.popSize = pop_size
-        self.list_params = list_parameters
+        self.list_params = []  # list of parameter sets each of which corresponds to a cohort
         self.multiCohortOutcomes = MultiCohortOutcomes()
+
+        # create parameter sets
+        self.__populate_parameter_sets(therapy=therapy)
+
+    def __populate_parameter_sets(self, therapy):
+
+        # create a parameter set generator
+        param_generator = ParameterGenerator(therapy=therapy)
+
+        # create as many sets of parameters as the number of cohorts
+        for i in range(len(self.ids)):
+            # create a new random number generator for each parameter set
+            rng = RVGs.RNG(seed=i)
+            # get and store a new set of parameter
+            self.list_params.append(param_generator.get_new_parameters(rng=rng))
 
     def simulate(self, sim_length):
         """ simulates all cohorts

@@ -2,27 +2,41 @@ import MultiCohortClasses as Cls
 import ProbilisticParamClasses as P
 import InputData as D
 import MultiCohortSupport as Support
-import SimPy.RandomVariantGenerators as RVGs
-import SimPy.SamplePathClasses as Path
-import SimPy.FigureSupport as Fig
 
-N_COHORTS = 3              # number of cohorts
-therapy = P.Therapies.MONO  # selected therapy
+N_COHORTS = 100              # number of cohorts
 
-# create a parameter generator
-param_generator = P.ParameterGenerator(therapy=therapy)
-
-# create parameter sets
-rng = RVGs.RNG(seed=0)
-list_params = []
-for i in range(N_COHORTS):
-    list_params.append(param_generator.get_new_parameters(rng=rng))
-
-# create multiple cohort
-multiCohort = Cls.MultiCohort(
+# create a multi-cohort to simulate under mono therapy
+multiCohortMono = Cls.MultiCohort(
     ids=range(N_COHORTS),
     pop_size=D.POP_SIZE,
-    list_parameters=list_params
+    therapy=P.Therapies.MONO
 )
 
-multiCohort.simulate(sim_length=D.SIM_LENGTH)
+multiCohortMono.simulate(sim_length=D.SIM_LENGTH)
+
+# create a multi-cohort to simulate under combi therapy
+multiCohortCombo = Cls.MultiCohort(
+    ids=range(N_COHORTS, 2*N_COHORTS),
+    pop_size=D.POP_SIZE,
+    therapy=P.Therapies.COMBO
+)
+
+multiCohortCombo.simulate(sim_length=D.SIM_LENGTH)
+
+# print the estimates for the mean survival time and mean time to AIDS
+Support.print_outcomes(multi_cohort_outcomes=multiCohortMono.multiCohortOutcomes,
+                       therapy_name=P.Therapies.MONO)
+Support.print_outcomes(multi_cohort_outcomes=multiCohortCombo.multiCohortOutcomes,
+                       therapy_name=P.Therapies.COMBO)
+
+# draw survival curves and histograms
+Support.plot_survival_curves_and_histograms(multi_cohort_outcomes_mono=multiCohortMono.multiCohortOutcomes,
+                                            multi_cohort_outcomes_combo=multiCohortCombo.multiCohortOutcomes)
+
+# print comparative outcomes
+Support.print_comparative_outcomes(multi_cohort_outcomes_mono=multiCohortMono.multiCohortOutcomes,
+                                   multi_cohort_outcomes_combo=multiCohortCombo.multiCohortOutcomes)
+
+# report the CEA results
+Support.report_CEA_CBA(multi_cohort_outcomes_mono=multiCohortMono.multiCohortOutcomes,
+                       multi_cohort_outcomes_combo=multiCohortCombo.multiCohortOutcomes)
