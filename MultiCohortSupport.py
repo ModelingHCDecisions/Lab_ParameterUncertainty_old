@@ -55,20 +55,22 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
     :param multi_cohort_outcomes_combo: outcomes of a multi-cohort simulated under combination therapy
     """
 
-    # # get survival curves of both treatments
-    # survival_curves = [
-    #     sim_outcomes_mono.nLivingPatients,
-    #     sim_outcomes_combo.nLivingPatients
-    # ]
-    #
-    # # graph survival curve
-    # PathCls.graph_sample_paths(
-    #     sample_paths=survival_curves,
-    #     title='Survival curve',
-    #     x_label='Simulation time step (year)',
-    #     y_label='Number of alive patients',
-    #     legends=['Mono Therapy', 'Combination Therapy']
-    # )
+    # get survival curves of both treatments
+    sets_of_survival_curves = [
+        multi_cohort_outcomes_mono.survivalCurves,
+        multi_cohort_outcomes_combo.survivalCurves
+    ]
+
+    # graph survival curve
+    PathCls.graph_sets_of_sample_paths(
+        sets_of_sample_paths=sets_of_survival_curves,
+        title='Survival curve',
+        x_label='Simulation time step (year)',
+        y_label='Number of alive patients',
+        legends=['Mono Therapy', 'Combination Therapy'],
+        transparency=0.4,
+        color_codes=['green', 'blue']
+    )
 
     # histograms of survival times
     set_of_survival_times = [
@@ -82,9 +84,11 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
         title='Histogram of mean patient survival time',
         x_label='Survival time (year)',
         y_label='Counts',
-        bin_width=1,
-        legend=['Mono Therapy', 'Combination Therapy'],
-        transparency=0.6
+        bin_width=0.25,
+        x_range=[5.25, 17.75],
+        legends=['Mono Therapy', 'Combination Therapy'],
+        color_codes=['green', 'blue'],
+        transparency=0.5
     )
 
 

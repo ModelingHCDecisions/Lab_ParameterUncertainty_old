@@ -16,10 +16,18 @@ class MultiCohort:
         self.ids = ids
         self.popSize = pop_size
         self.list_params = []  # list of parameter sets each of which corresponds to a cohort
+        self.cohorts = []
         self.multiCohortOutcomes = MultiCohortOutcomes()
 
         # create parameter sets
         self.__populate_parameter_sets(therapy=therapy)
+
+        # create cohorts
+        for i in range(len(self.ids)):
+            self.cohorts.append(Cohort(id=self.ids[i],
+                                       pop_size=self.popSize,
+                                       parameters=self.list_params[i])
+                                )
 
     def __populate_parameter_sets(self, therapy):
 
@@ -38,9 +46,7 @@ class MultiCohort:
         :param sim_length: simulation length
         """
 
-        for i in range(len(self.ids)):
-            # create a cohort
-            cohort = Cohort(id=self.ids[i], pop_size=self.popSize, parameters=self.list_params[i])
+        for cohort in self.cohorts:
 
             # simulate the cohort
             cohort.simulate(sim_length=sim_length)
@@ -50,6 +56,9 @@ class MultiCohort:
 
         # calculate the summary statistics of from all cohorts
         self.multiCohortOutcomes.calculate_summary_stats()
+
+        # clear cohorts
+        self.cohorts.clear()
 
 
 class MultiCohortOutcomes:
