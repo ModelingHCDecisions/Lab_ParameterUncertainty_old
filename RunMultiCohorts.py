@@ -1,19 +1,20 @@
 import MultiCohortClasses as Cls
 import ProbilisticParamClasses as P
 import InputData as D
+import MultiCohortSupport as Support
 import SimPy.RandomVariantGenerators as RVGs
 import SimPy.SamplePathClasses as Path
 import SimPy.FigureSupport as Fig
 
-N_COHORTS = 10         # number of cohorts
-
-rng = RVGs.RNG(seed=0)
+N_COHORTS = 3              # number of cohorts
+therapy = P.Therapies.MONO  # selected therapy
 
 # create a parameter generator
-param_generator = P.ParameterGenerator(therapy=P.Therapies.MONO)
+param_generator = P.ParameterGenerator(therapy=therapy)
 
 # create parameter sets
-list_params=[]
+rng = RVGs.RNG(seed=0)
+list_params = []
 for i in range(N_COHORTS):
     list_params.append(param_generator.get_new_parameters(rng=rng))
 
@@ -40,3 +41,7 @@ Fig.graph_histogram(
     title='Histogram of Mean Survival Time',
     x_label='Mean Survival Time (Year)',
     y_label='Count')
+
+# print the outcomes of this simulated cohort
+Support.print_outcomes(multi_cohort_outcomes=multiCohort.multiCohortOutcomes,
+                       therapy_name=therapy)

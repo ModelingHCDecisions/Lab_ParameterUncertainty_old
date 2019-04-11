@@ -41,8 +41,14 @@ class MultiCohortOutcomes:
         self.survivalCurves = []  # list of survival curves from all simulated cohorts
 
         self.meanSurvivalTimes = []  # list of average patient survival time for all simulated cohort
+        self.meanTimeToAIDS = []
+        self.meanCosts = []
+        self.meanQALYs = []
 
         self.statMeanSurvivalTime = None  # summary statistics of mean survival time
+        self.statMeanTimeToAIDS = None
+        self.statMeanCost = None
+        self.statMeanQALY = None
 
     def extract_outcomes(self, simulated_cohort):
         """ extracts outcomes of a simulated cohort
@@ -53,6 +59,12 @@ class MultiCohortOutcomes:
 
         # store mean survival time from this cohort
         self.meanSurvivalTimes.append(simulated_cohort.cohortOutcomes.statSurvivalTime.get_mean())
+        # store mean time to AIDS from this cohort
+        self.meanTimeToAIDS.append(simulated_cohort.cohortOutcomes.statTimeToAIDS.get_mean())
+        # store mean cost from this cohort
+        self.meanCosts.append(simulated_cohort.cohortOutcomes.statCost.get_mean())
+        # store mean QALY from this cohort
+        self.meanQALYs.append(simulated_cohort.cohortOutcomes.statUtility.get_mean())
 
     def calculate_summary_stats(self):
         """
@@ -62,3 +74,12 @@ class MultiCohortOutcomes:
         # summary statistics of mean survival time
         self.statMeanSurvivalTime = Stat.SummaryStat(name='Mean survival time',
                                                      data=self.meanSurvivalTimes)
+        # summary statistics of mean time to AIDS
+        self.statMeanTimeToAIDS = Stat.SummaryStat(name='Mean time to AIDS',
+                                                   data=self.meanTimeToAIDS)
+        # summary statistics of mean cost
+        self.statMeanCost = Stat.SummaryStat(name='Mean cost',
+                                             data=self.meanCosts)
+        # summary statistics of mean QALY
+        self.statMeanQALY = Stat.SummaryStat(name='Mean QALY',
+                                             data=self.meanQALYs)
