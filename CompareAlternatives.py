@@ -3,7 +3,7 @@ import ProbilisticParamClasses as P
 import InputData as D
 import MultiCohortSupport as Support
 
-N_COHORTS = 10              # number of cohorts
+N_COHORTS = 25  # number of cohorts
 
 # create a multi-cohort to simulate under mono therapy
 multiCohortMono = Cls.MultiCohort(

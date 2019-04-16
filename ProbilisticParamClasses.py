@@ -29,7 +29,7 @@ class ParameterGenerator:
         self.annualStateCostRVG = []  # list of gamma distributions for the annual cost of states
         self.annualStateUtilityRVG = []  # list of beta distributions for the annual utility of states
 
-        # transition probabilities
+        # create Dirichlet distributions for transition probabilities
         j = 0
         for prob in Data.TRANS_MATRIX:
             self.probMatrixRVG.append(RVGs.Dirichlet(a=prob[j:]))
@@ -44,11 +44,11 @@ class ParameterGenerator:
         # sample standard deviation of ln(RR)
         std_ln_rr = \
             (math.log(rr_ci[1]) - math.log(rr_ci[0])) / (2 * stat.norm.ppf(1 - 0.05 / 2))
-
+        # create a normal distribution for ln(RR)
         self.lnRelativeRiskRVG = RVGs.Normal(loc=mean_ln_rr,
                                              scale=std_ln_rr)
 
-        # annual state cost
+        # create gamma distributions for annual state cost
         for cost in Data.ANNUAL_STATE_COST:
 
             # if cost is zero, add a constant 0, otherwise add a gamma distribution
@@ -56,20 +56,22 @@ class ParameterGenerator:
                 self.annualStateCostRVG.append(RVGs.Constant(value=0))
             else:
                 # find shape and scale of the assumed gamma distribution
+                # no data available to estimate the standard deviation, so we assumed st_dev=cost / 5
                 fit_output = MM.get_gamma_params(mean=cost, st_dev=cost / 5)
                 # append the distribution
                 self.annualStateCostRVG.append(
                     RVGs.Gamma(a=fit_output["a"],
-                                 loc=0,
-                                 scale=fit_output["scale"]))
+                               loc=0,
+                               scale=fit_output["scale"]))
 
-        # annual state utility
+        # create beta distributions for annual state utility
         for utility in Data.ANNUAL_STATE_UTILITY:
             # if utility is zero, add a constant 0, otherwise add a beta distribution
             if utility == 0:
                 self.annualStateCostRVG.append(RVGs.Constant(value=0))
             else:
                 # find alpha and beta of the assumed beta distribution
+                # no data available to estimate the standard deviation, so we assumed st_dev=cost / 4
                 fit_output = MM.get_beta_params(mean=utility, st_dev=utility / 4)
                 # append the distribution
                 self.annualStateUtilityRVG.append(
@@ -85,7 +87,6 @@ class ParameterGenerator:
         param = Parameters(therapy=self.therapy)
 
         # calculate transition probabilities
-
         prob_matrix = []    # probability matrix without background mortality added
         # for all health states
         for s in HealthStates:
@@ -96,8 +97,12 @@ class ParameterGenerator:
                 prob_matrix.append([0] * (len(HealthStates)-1))
                 # sample from the dirichlet distribution to find the transition probabilities between hiv states
                 sample = self.probMatrixRVG[s.value].sample(rng)
+                # fill in the transition probabilities out of this state
                 for j in range(len(sample)):
                     prob_matrix[s.value][s.value + j] = sample[j]
+
+        # sampled relative risk
+        rr = math.exp(self.lnRelativeRiskRVG.sample(rng))
 
         # calculate transition probabilities between hiv states
         if self.therapy == Therapies.MONO:
@@ -108,7 +113,7 @@ class ParameterGenerator:
             # calculate transition probability matrix for the combination therapy
             param.rateMatrix = get_rate_matrix_combo(
                 rate_matrix_mono=get_rate_matrix_mono(trans_prob_matrix=prob_matrix),
-                combo_rr=Data.TREATMENT_RR)
+                combo_rr=rr)
 
         # sample from gamma distributions that are assumed for annual state costs
         for dist in self.annualStateCostRVG:

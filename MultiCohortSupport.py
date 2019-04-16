@@ -50,7 +50,7 @@ def print_outcomes(multi_cohort_outcomes, therapy_name):
 
 
 def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
-    """ draws the survival curves and the histograms of time until HIV deaths
+    """ plot the survival curves and the histograms of survival times
     :param multi_cohort_outcomes_mono: outcomes of a multi-cohort simulated under mono therapy
     :param multi_cohort_outcomes_combo: outcomes of a multi-cohort simulated under combination therapy
     """
@@ -64,9 +64,9 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
     # graph survival curve
     PathCls.graph_sets_of_sample_paths(
         sets_of_sample_paths=sets_of_survival_curves,
-        title='Survival curve',
-        x_label='Simulation time step (year)',
-        y_label='Number of alive patients',
+        title='Survival Curves',
+        x_label='Simulation Time Step (year)',
+        y_label='Number of Patients Alive',
         legends=['Mono Therapy', 'Combination Therapy'],
         transparency=0.4,
         color_codes=['green', 'blue']
@@ -81,8 +81,8 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
     # graph histograms
     Figs.graph_histograms(
         data_sets=set_of_survival_times,
-        title='Histogram of mean patient survival time',
-        x_label='Survival time (year)',
+        title='Histograms of Average Patient Survival Time',
+        x_label='Survival Time (year)',
         y_label='Counts',
         bin_width=0.25,
         x_range=[5.25, 17.75],
@@ -174,7 +174,7 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
 
     # report the CE table
     CEA.build_CE_table(
-        interval_type='p',
+        interval_type='p',  # prediction intervals
         alpha=D.ALPHA,
         cost_digits=0,
         effect_digits=2,
@@ -190,7 +190,7 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
         min_wtp=0,
         max_wtp=50000,
         title='Cost-Benefit Analysis',
-        x_label='Willingness-to-pay for one additional QALY ($)',
+        x_label='Willingness-To-Pay for One Additional QALY ($)',
         y_label='Incremental Net Monetary Benefit ($)',
         interval_type='p',
         show_legend=True,
@@ -237,8 +237,8 @@ def show_ce_figure(CEA):
     plt.legend()        # show the legend
     plt.axhline(y=0, c='k', linewidth=0.5)  # horizontal line at y = 0
     plt.axvline(x=0, c='k', linewidth=0.5)  # vertical line at x = 0
-    plt.xlim([-2.5, 10])              # x-axis range
-    plt.ylim([-50000, 200000])     # y-axis range
+    plt.xlim([-2, 8])              # x-axis range
+    plt.ylim([-20000, 120000])     # y-axis range
     plt.title('Cost-Effectiveness Analysis')
     plt.xlabel('Additional discounted QALY')
     plt.ylabel('Additional discounted cost')

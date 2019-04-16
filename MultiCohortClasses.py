@@ -15,7 +15,7 @@ class MultiCohort:
         """
         self.ids = ids
         self.popSize = pop_size
-        self.list_params = []  # list of parameter sets each of which corresponds to a cohort
+        self.param_sets = []  # list of parameter sets each of which corresponds to a cohort
         self.cohorts = []
         self.multiCohortOutcomes = MultiCohortOutcomes()
 
@@ -26,7 +26,7 @@ class MultiCohort:
         for i in range(len(self.ids)):
             self.cohorts.append(Cohort(id=self.ids[i],
                                        pop_size=self.popSize,
-                                       parameters=self.list_params[i])
+                                       parameters=self.param_sets[i])
                                 )
 
     def __populate_parameter_sets(self, therapy):
@@ -39,7 +39,7 @@ class MultiCohort:
             # create a new random number generator for each parameter set
             rng = RVGs.RNG(seed=i)
             # get and store a new set of parameter
-            self.list_params.append(param_generator.get_new_parameters(rng=rng))
+            self.param_sets.append(param_generator.get_new_parameters(rng=rng))
 
     def simulate(self, sim_length):
         """ simulates all cohorts
@@ -51,13 +51,13 @@ class MultiCohort:
             # simulate the cohort
             cohort.simulate(sim_length=sim_length)
 
-            # outcomes from simulating all cohorts
+            # extract the outcomes of this simulated cohort
             self.multiCohortOutcomes.extract_outcomes(simulated_cohort=cohort)
 
-        # calculate the summary statistics of from all cohorts
+        # calculate the summary statistics of outcomes from all cohorts
         self.multiCohortOutcomes.calculate_summary_stats()
 
-        # clear cohorts
+        # clear cohorts (to free up the memory that was allocated to these cohorts)
         self.cohorts.clear()
 
 
@@ -66,15 +66,15 @@ class MultiCohortOutcomes:
 
         self.survivalCurves = []  # list of survival curves from all simulated cohorts
 
-        self.meanSurvivalTimes = []  # list of average patient survival time for all simulated cohort
-        self.meanTimeToAIDS = []
-        self.meanCosts = []
-        self.meanQALYs = []
+        self.meanSurvivalTimes = []  # list of average patient survival time from each simulated cohort
+        self.meanTimeToAIDS = []     # list of average patient time until AIDS from each simulated cohort
+        self.meanCosts = []          # list of average patient cost from each simulated cohort
+        self.meanQALYs = []          # list of average patient QALY from each simulated cohort
 
-        self.statMeanSurvivalTime = None  # summary statistics of mean survival time
-        self.statMeanTimeToAIDS = None
-        self.statMeanCost = None
-        self.statMeanQALY = None
+        self.statMeanSurvivalTime = None    # summary statistics of average survival time
+        self.statMeanTimeToAIDS = None      # summary statistics of average time until AIDS
+        self.statMeanCost = None            # summary statistics of average cost
+        self.statMeanQALY = None            # summary statistics of average QALY
 
     def extract_outcomes(self, simulated_cohort):
         """ extracts outcomes of a simulated cohort
@@ -98,14 +98,14 @@ class MultiCohortOutcomes:
         """
 
         # summary statistics of mean survival time
-        self.statMeanSurvivalTime = Stat.SummaryStat(name='Mean survival time',
+        self.statMeanSurvivalTime = Stat.SummaryStat(name='Average survival time',
                                                      data=self.meanSurvivalTimes)
         # summary statistics of mean time to AIDS
-        self.statMeanTimeToAIDS = Stat.SummaryStat(name='Mean time to AIDS',
+        self.statMeanTimeToAIDS = Stat.SummaryStat(name='Average time to AIDS',
                                                    data=self.meanTimeToAIDS)
         # summary statistics of mean cost
-        self.statMeanCost = Stat.SummaryStat(name='Mean cost',
+        self.statMeanCost = Stat.SummaryStat(name='Average cost',
                                              data=self.meanCosts)
         # summary statistics of mean QALY
-        self.statMeanQALY = Stat.SummaryStat(name='Mean QALY',
+        self.statMeanQALY = Stat.SummaryStat(name='Average QALY',
                                              data=self.meanQALYs)

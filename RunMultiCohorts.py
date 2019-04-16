@@ -6,8 +6,8 @@ import SimPy.RandomVariantGenerators as RVGs
 import SimPy.SamplePathClasses as Path
 import SimPy.FigureSupport as Fig
 
-N_COHORTS = 5              # number of cohorts
-therapy = P.Therapies.MONO  # selected therapy
+N_COHORTS = 20              # number of cohorts
+therapy = P.Therapies.COMBO  # selected therapy
 
 # create multiple cohort
 multiCohort = Cls.MultiCohort(
