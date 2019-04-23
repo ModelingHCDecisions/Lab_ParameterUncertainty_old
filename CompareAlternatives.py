@@ -1,7 +1,7 @@
-import MultiCohortClasses as Cls
-import ProbilisticParamClasses as P
 import InputData as D
+import MultiCohortClasses as Cls
 import MultiCohortSupport as Support
+import ProbilisticParamClasses as P
 
 N_COHORTS = 25  # number of cohorts
 

@@ -1,7 +1,7 @@
+import SimPy.RandomVariantGenerators as RVGs
+import SimPy.StatisticalClasses as Stat
 from MarkovModelClasses import Cohort
 from ProbilisticParamClasses import ParameterGenerator
-import SimPy.StatisticalClasses as Stat
-import SimPy.RandomVariantGenerators as RVGs
 
 
 class MultiCohort:

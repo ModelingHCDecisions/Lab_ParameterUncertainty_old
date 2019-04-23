@@ -1,9 +1,10 @@
-import InputData as D
-import SimPy.SamplePathClasses as PathCls
-import SimPy.FigureSupport as Figs
-import SimPy.StatisticalClasses as Stat
-import SimPy.EconEvalClasses as Econ
 import matplotlib.pyplot as plt
+
+import InputData as D
+import SimPy.EconEvalClasses as Econ
+import SimPy.FigureSupport as Figs
+import SimPy.SamplePathClasses as PathCls
+import SimPy.StatisticalClasses as Stat
 
 
 def print_outcomes(multi_cohort_outcomes, therapy_name):

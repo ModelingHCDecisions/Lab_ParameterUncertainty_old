@@ -1,10 +1,9 @@
-import MultiCohortClasses as Cls
-import ProbilisticParamClasses as P
 import InputData as D
+import MultiCohortClasses as Cls
 import MultiCohortSupport as Support
-import SimPy.RandomVariantGenerators as RVGs
-import SimPy.SamplePathClasses as Path
+import ProbilisticParamClasses as P
 import SimPy.FigureSupport as Fig
+import SimPy.SamplePathClasses as Path
 
 N_COHORTS = 20              # number of cohorts
 therapy = P.Therapies.COMBO  # selected therapy
