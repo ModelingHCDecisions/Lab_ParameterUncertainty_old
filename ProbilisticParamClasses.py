@@ -28,6 +28,7 @@ class ParameterGenerator:
         self.lnRelativeRiskRVG = None  # normal distribution for the natural log of the treatment relative risk
         self.annualStateCostRVG = []  # list of gamma distributions for the annual cost of states
         self.annualStateUtilityRVG = []  # list of beta distributions for the annual utility of states
+        self.annualTreatmentCost = None   # gamma distribution for treatment cost
 
         # create Dirichlet distributions for transition probabilities
         j = 0
@@ -77,6 +78,17 @@ class ParameterGenerator:
                 self.annualStateUtilityRVG.append(
                     RVGs.Beta(a=fit_output["a"], b=fit_output["b"]))
 
+        # create a gamma distribution for treatment cost
+        # annual treatment cost
+        if self.therapy == Therapies.MONO:
+            annual_cost = Data.Zidovudine_COST
+        else:
+            annual_cost = Data.Zidovudine_COST + Data.Lamivudine_COST
+        fit_output = MM.get_gamma_params(mean=annual_cost, st_dev=annual_cost / 5)
+        self.annualTreatmentCost= RVGs.Gamma(a=fit_output["a"],
+                                             loc=0,
+                                             scale=fit_output["scale"])
+
     def get_new_parameters(self, rng):
         """
         :param rng: random number generator
@@ -122,6 +134,9 @@ class ParameterGenerator:
         # sample from beta distributions that are assumed for annual state utilities
         for dist in self.annualStateUtilityRVG:
             param.annualStateUtilities.append(dist.sample(rng))
+
+        # sample from the gamma distribution that is assumed for the treatment cost
+        param.annualTreatmentCost = self.annualTreatmentCost.sample(rng)
 
         # return the parameter set
         return param
