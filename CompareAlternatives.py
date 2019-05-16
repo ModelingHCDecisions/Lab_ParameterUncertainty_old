@@ -4,11 +4,12 @@ import MultiCohortSupport as Support
 import ProbilisticParamClasses as P
 
 N_COHORTS = 25  # number of cohorts
+POP_SIZE = 100 # population size of each cohort
 
 # create a multi-cohort to simulate under mono therapy
 multiCohortMono = Cls.MultiCohort(
     ids=range(N_COHORTS),
-    pop_size=D.POP_SIZE,
+    pop_size=POP_SIZE,
     therapy=P.Therapies.MONO
 )
 
@@ -17,7 +18,7 @@ multiCohortMono.simulate(sim_length=D.SIM_LENGTH)
 # create a multi-cohort to simulate under combo therapy
 multiCohortCombo = Cls.MultiCohort(
     ids=range(N_COHORTS, 2*N_COHORTS),
-    pop_size=D.POP_SIZE,
+    pop_size=POP_SIZE,
     therapy=P.Therapies.COMBO
 )
 

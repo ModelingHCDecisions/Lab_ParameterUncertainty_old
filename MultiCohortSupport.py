@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 import InputData as D
-import SimPy.EconEvalClasses as Econ
+import SimPy.EconEval as Econ
 import SimPy.FigureSupport as Figs
 import SimPy.SamplePathClasses as PathCls
 import SimPy.StatisticalClasses as Stat
@@ -171,7 +171,13 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
     )
 
     # show the cost-effectiveness plane
-    show_ce_figure(CEA=CEA)
+    CEA.show_CE_plane(
+        title='Cost-Effectiveness Analysis',
+        x_label='Additional Discounted DALY',
+        y_label='Additional Discounted Cost',
+        fig_size=(6, 5),
+        add_clouds=True,
+        transparency=0.2)
 
     # report the CE table
     CEA.build_CE_table(
@@ -184,6 +190,7 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
     # CBA
     NBA = Econ.CBA(
         strategies=[mono_therapy_strategy, combo_therapy_strategy],
+        wtp_range=(0, 50000),
         if_paired=True
     )
     # show the net monetary benefit figure
@@ -197,50 +204,3 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
         show_legend=True,
         figure_size=(6, 5)
     )
-
-
-def show_ce_figure(CEA):
-
-    # create a cost-effectiveness plot
-    plt.figure(figsize=(5, 5))
-
-    # find the frontier (x, y)'s
-    frontier_utilities = []
-    frontier_costs = []
-    for s in CEA.get_shifted_strategies_on_frontier():
-        frontier_utilities.append(s.aveEffect)
-        frontier_costs.append(s.aveCost)
-
-    # draw the frontier line
-    plt.plot(frontier_utilities, frontier_costs,
-             c='k',  # color
-             alpha=0.6,  # transparency
-             linewidth=2,  # line width
-             label="Frontier")  # label to show in the legend
-
-    # add the strategies
-    for s in CEA.get_shifted_strategies():
-        # add the center of the cloud
-        plt.scatter(s.aveEffect, s.aveCost,
-                    c=s.color,      # color
-                    alpha=1,        # transparency
-                    marker='o',     # markers
-                    s=75,          # marker size
-                    label=s.name    # name to show in the legend
-                    )
-        # add the cloud
-        plt.scatter(s.effectObs, s.costObs,
-                    c=s.color,  # color of dots
-                    alpha=0.15,  # transparency of dots
-                    s=25,  # size of dots
-                    )
-
-    plt.legend()        # show the legend
-    plt.axhline(y=0, c='k', linewidth=0.5)  # horizontal line at y = 0
-    plt.axvline(x=0, c='k', linewidth=0.5)  # vertical line at x = 0
-    plt.xlim([-2, 8])              # x-axis range
-    plt.ylim([-20000, 120000])     # y-axis range
-    plt.title('Cost-Effectiveness Analysis')
-    plt.xlabel('Additional discounted QALY')
-    plt.ylabel('Additional discounted cost')
-    plt.show()
