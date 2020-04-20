@@ -1,9 +1,8 @@
-from ParameterClasses import *  # import everything from the ParameterClass module
-import InputData as Data
-import SimPy.RandomVariantGenerators as RVGs
-import SimPy.FittingProbDist_MM as MM
 import math
 import scipy.stats as stat
+import SimPy.FittingProbDist_MM as MM
+import SimPy.RandomVariantGenerators as RVGs
+from ParameterClasses import *  # import everything from the ParameterClass module
 
 
 class Parameters:

@@ -1,8 +1,8 @@
 import InputData as D
-import SimPy.Plots.SamplePaths as Path
-import SimPy.Plots.Histogram as Hist
-import SimPy.StatisticalClasses as Stat
 import SimPy.EconEval as Econ
+import SimPy.Plots.Histogram as Hist
+import SimPy.Plots.SamplePaths as Path
+import SimPy.StatisticalClasses as Stat
 
 
 def print_outcomes(multi_cohort_outcomes, therapy_name):
