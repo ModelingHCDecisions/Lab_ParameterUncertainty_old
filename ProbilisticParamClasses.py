@@ -64,6 +64,16 @@ class ParameterGenerator:
                                loc=0,
                                scale=fit_output["scale"]))
 
+        # create a gamma distribution for annual treatment cost
+        if self.therapy == Therapies.MONO:
+            annual_cost = Data.Zidovudine_COST
+        else:
+            annual_cost = Data.Zidovudine_COST + Data.Lamivudine_COST
+        fit_output = MM.get_gamma_params(mean=annual_cost, st_dev=annual_cost / 5)
+        self.annualTreatmentCost = RVGs.Gamma(a=fit_output["a"],
+                                              loc=0,
+                                              scale=fit_output["scale"])
+
         # create beta distributions for annual state utility
         for utility in Data.ANNUAL_STATE_UTILITY:
             # if utility is zero, add a constant 0, otherwise add a beta distribution
@@ -76,17 +86,6 @@ class ParameterGenerator:
                 # append the distribution
                 self.annualStateUtilityRVG.append(
                     RVGs.Beta(a=fit_output["a"], b=fit_output["b"]))
-
-        # create a gamma distribution for treatment cost
-        # annual treatment cost
-        if self.therapy == Therapies.MONO:
-            annual_cost = Data.Zidovudine_COST
-        else:
-            annual_cost = Data.Zidovudine_COST + Data.Lamivudine_COST
-        fit_output = MM.get_gamma_params(mean=annual_cost, st_dev=annual_cost / 5)
-        self.annualTreatmentCost = RVGs.Gamma(a=fit_output["a"],
-                                              loc=0,
-                                              scale=fit_output["scale"])
 
     def get_new_parameters(self, rng):
         """
@@ -130,12 +129,12 @@ class ParameterGenerator:
         for dist in self.annualStateCostRVG:
             param.annualStateCosts.append(dist.sample(rng))
 
+        # sample from the gamma distribution that is assumed for the treatment cost
+        param.annualTreatmentCost = self.annualTreatmentCost.sample(rng)
+
         # sample from beta distributions that are assumed for annual state utilities
         for dist in self.annualStateUtilityRVG:
             param.annualStateUtilities.append(dist.sample(rng))
-
-        # sample from the gamma distribution that is assumed for the treatment cost
-        param.annualTreatmentCost = self.annualTreatmentCost.sample(rng)
 
         # return the parameter set
         return param
