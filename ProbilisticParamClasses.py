@@ -85,9 +85,9 @@ class ParameterGenerator:
         else:
             annual_cost = Data.Zidovudine_COST + Data.Lamivudine_COST
         fit_output = MM.get_gamma_params(mean=annual_cost, st_dev=annual_cost / 5)
-        self.annualTreatmentCost= RVGs.Gamma(a=fit_output["a"],
-                                             loc=0,
-                                             scale=fit_output["scale"])
+        self.annualTreatmentCost = RVGs.Gamma(a=fit_output["a"],
+                                              loc=0,
+                                              scale=fit_output["scale"])
 
     def get_new_parameters(self, rng):
         """
@@ -119,12 +119,12 @@ class ParameterGenerator:
         # calculate transition probabilities between hiv states
         if self.therapy == Therapies.MONO:
             # calculate transition probability matrix for the mono therapy
-            param.rateMatrix = get_rate_matrix_mono(trans_prob_matrix=prob_matrix)
+            param.rateMatrix = get_trans_rate_matrix(trans_prob_matrix=prob_matrix)
 
         elif self.therapy == Therapies.COMBO:
             # calculate transition probability matrix for the combination therapy
-            param.rateMatrix = get_rate_matrix_combo(
-                rate_matrix_mono=get_rate_matrix_mono(trans_prob_matrix=prob_matrix),
+            param.rateMatrix = get_trans_rate_matrix_combo(
+                rate_matrix_mono=get_trans_rate_matrix(trans_prob_matrix=prob_matrix),
                 combo_rr=rr)
 
         # sample from gamma distributions that are assumed for annual state costs

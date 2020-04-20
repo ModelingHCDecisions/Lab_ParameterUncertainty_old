@@ -1,10 +1,8 @@
-import matplotlib.pyplot as plt
-
 import InputData as D
-import SimPy.EconEval as Econ
-import SimPy.FigureSupport as Figs
-import SimPy.SamplePathClasses as PathCls
+import SimPy.Plots.SamplePaths as Path
+import SimPy.Plots.Histogram as Hist
 import SimPy.StatisticalClasses as Stat
+import SimPy.EconEval as Econ
 
 
 def print_outcomes(multi_cohort_outcomes, therapy_name):
@@ -63,7 +61,7 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
     ]
 
     # graph survival curve
-    PathCls.graph_sets_of_sample_paths(
+    Path.plot_sets_of_sample_paths(
         sets_of_sample_paths=sets_of_survival_curves,
         title='Survival Curves',
         x_label='Simulation Time Step (year)',
@@ -80,7 +78,7 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
     ]
 
     # graph histograms
-    Figs.graph_histograms(
+    Hist.plot_histograms(
         data_sets=set_of_survival_times,
         title='Histograms of Average Patient Survival Time',
         x_label='Survival Time (year)',
@@ -171,9 +169,9 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
     )
 
     # show the cost-effectiveness plane
-    CEA.show_CE_plane(
+    CEA.plot_CE_plane(
         title='Cost-Effectiveness Analysis',
-        x_label='Additional Discounted DALY',
+        x_label='Additional Discounted QALY',
         y_label='Additional Discounted Cost',
         fig_size=(6, 5),
         add_clouds=True,
@@ -181,11 +179,12 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
 
     # report the CE table
     CEA.build_CE_table(
-        interval_type='p',  # prediction intervals
+        interval_type='p',  # uncertainty (projection) interval
         alpha=D.ALPHA,
         cost_digits=0,
         effect_digits=2,
-        icer_digits=2)
+        icer_digits=2,
+        file_name='CETable.csv')
 
     # CBA
     NBA = Econ.CBA(
@@ -194,9 +193,7 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
         if_paired=True
     )
     # show the net monetary benefit figure
-    NBA.graph_incremental_NMBs(
-        min_wtp=0,
-        max_wtp=50000,
+    NBA.plot_incremental_nmbs(
         title='Cost-Benefit Analysis',
         x_label='Willingness-To-Pay for One Additional QALY ($)',
         y_label='Incremental Net Monetary Benefit ($)',
