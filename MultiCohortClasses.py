@@ -21,8 +21,6 @@ class MultiCohort:
         # create parameter sets
         self.__populate_parameter_sets(therapy=therapy)
 
-
-
     def __populate_parameter_sets(self, therapy):
 
         # create a parameter set generator
