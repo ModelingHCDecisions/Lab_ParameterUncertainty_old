@@ -27,7 +27,7 @@ class ParameterGenerator:
         self.lnRelativeRiskRVG = None  # normal distribution for the natural log of the treatment relative risk
         self.annualStateCostRVG = []  # list of gamma distributions for the annual cost of states
         self.annualStateUtilityRVG = []  # list of beta distributions for the annual utility of states
-        self.annualTreatmentCost = None   # gamma distribution for treatment cost
+        self.annualTreatmentCostRVG = None   # gamma distribution for treatment cost
 
         # create Dirichlet distributions for transition probabilities
         j = 0
@@ -70,9 +70,9 @@ class ParameterGenerator:
         else:
             annual_cost = Data.Zidovudine_COST + Data.Lamivudine_COST
         fit_output = MM.get_gamma_params(mean=annual_cost, st_dev=annual_cost / 5)
-        self.annualTreatmentCost = RVGs.Gamma(a=fit_output["a"],
-                                              loc=0,
-                                              scale=fit_output["scale"])
+        self.annualTreatmentCostRVG = RVGs.Gamma(a=fit_output["a"],
+                                                 loc=0,
+                                                 scale=fit_output["scale"])
 
         # create beta distributions for annual state utility
         for utility in Data.ANNUAL_STATE_UTILITY:
@@ -130,7 +130,7 @@ class ParameterGenerator:
             param.annualStateCosts.append(dist.sample(rng))
 
         # sample from the gamma distribution that is assumed for the treatment cost
-        param.annualTreatmentCost = self.annualTreatmentCost.sample(rng)
+        param.annualTreatmentCost = self.annualTreatmentCostRVG.sample(rng)
 
         # sample from beta distributions that are assumed for annual state utilities
         for dist in self.annualStateUtilityRVG:
