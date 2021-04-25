@@ -1,7 +1,8 @@
 import math
+
 import scipy.stats as stat
-import SimPy.FittingProbDist_MM as MM
-import SimPy.RandomVariantGenerators as RVGs
+
+import SimPy.RandomVariateGenerators as RVGs
 from ParameterClasses import *  # import everything from the ParameterClass module
 
 
@@ -12,7 +13,7 @@ class Parameters:
         self.therapy = therapy              # selected therapy
         self.initialHealthState = HealthStates.CD4_200to500     # initial health state
         self.annualTreatmentCost = 0        # annual treatment cost
-        self.rateMatrix = []                # transition probability matrix of the selected therapy
+        self.transRateMatrix = []                # transition probability matrix of the selected therapy
         self.annualStateCosts = []          # annual state costs
         self.annualStateUtilities = []      # annual state utilities
         self.discountRate = Data.DISCOUNT   # discount rate
@@ -57,7 +58,7 @@ class ParameterGenerator:
             else:
                 # find shape and scale of the assumed gamma distribution
                 # no data available to estimate the standard deviation, so we assumed st_dev=cost / 5
-                fit_output = MM.get_gamma_params(mean=cost, st_dev=cost / 5)
+                fit_output = RVGs.Gamma.fit_mm(mean=cost, st_dev=cost / 5)
                 # append the distribution
                 self.annualStateCostRVG.append(
                     RVGs.Gamma(a=fit_output["a"],
@@ -69,7 +70,7 @@ class ParameterGenerator:
             annual_cost = Data.Zidovudine_COST
         else:
             annual_cost = Data.Zidovudine_COST + Data.Lamivudine_COST
-        fit_output = MM.get_gamma_params(mean=annual_cost, st_dev=annual_cost / 5)
+        fit_output = RVGs.Gamma.fit_mm(mean=annual_cost, st_dev=annual_cost / 5)
         self.annualTreatmentCostRVG = RVGs.Gamma(a=fit_output["a"],
                                                  loc=0,
                                                  scale=fit_output["scale"])
@@ -82,7 +83,7 @@ class ParameterGenerator:
             else:
                 # find alpha and beta of the assumed beta distribution
                 # no data available to estimate the standard deviation, so we assumed st_dev=cost / 4
-                fit_output = MM.get_beta_params(mean=utility, st_dev=utility / 4)
+                fit_output = RVGs.Beta.fit_mm(mean=utility, st_dev=utility / 4)
                 # append the distribution
                 self.annualStateUtilityRVG.append(
                     RVGs.Beta(a=fit_output["a"], b=fit_output["b"]))
@@ -117,11 +118,11 @@ class ParameterGenerator:
         # calculate transition probabilities between hiv states
         if self.therapy == Therapies.MONO:
             # calculate transition probability matrix for the mono therapy
-            param.rateMatrix = get_trans_rate_matrix(trans_prob_matrix=prob_matrix)
+            param.transRateMatrix = get_trans_rate_matrix(trans_prob_matrix=prob_matrix)
 
         elif self.therapy == Therapies.COMBO:
             # calculate transition probability matrix for the combination therapy
-            param.rateMatrix = get_trans_rate_matrix_combo(
+            param.transRateMatrix = get_trans_rate_matrix_combo(
                 rate_matrix_mono=get_trans_rate_matrix(trans_prob_matrix=prob_matrix),
                 combo_rr=rr)
 

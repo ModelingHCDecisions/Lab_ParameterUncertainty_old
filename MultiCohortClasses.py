@@ -1,5 +1,6 @@
-import SimPy.RandomVariantGenerators as RVGs
-import SimPy.StatisticalClasses as Stat
+import numpy as np
+
+import SimPy.Statistics as Stat
 from MarkovModelClasses import Cohort
 from ProbilisticParamClasses import ParameterGenerator
 
@@ -29,7 +30,7 @@ class MultiCohort:
         # create as many sets of parameters as the number of cohorts
         for i in range(len(self.ids)):
             # create a new random number generator for each parameter set
-            rng = RVGs.RNG(seed=i)
+            rng = np.random.RandomState(seed=i)
             # get and store a new set of parameter
             self.paramSets.append(param_generator.get_new_parameters(rng=rng))
 
