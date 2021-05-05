@@ -32,8 +32,8 @@ class ParameterGenerator:
 
         # create Dirichlet distributions for transition probabilities
         j = 0
-        for prob in Data.TRANS_MATRIX:
-            self.probMatrixRVG.append(RVGs.Dirichlet(a=prob[j:]))
+        for probs in Data.TRANS_MATRIX:
+            self.probMatrixRVG.append(RVGs.Dirichlet(a=probs[j:]))
             j += 1
 
         # treatment relative risk
