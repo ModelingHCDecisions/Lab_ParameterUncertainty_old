@@ -199,5 +199,5 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
         y_label='Incremental Net Monetary Benefit ($)',
         interval_type='p',
         show_legend=True,
-        figure_size=(6, 5)
+        figure_size=(6, 5),
     )
