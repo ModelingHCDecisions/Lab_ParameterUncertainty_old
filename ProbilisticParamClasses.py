@@ -7,6 +7,7 @@ from ParameterClasses import *  # import everything from the ParameterClass modu
 
 
 class Parameters:
+    """ class to include parameter information to simulate the model """
 
     def __init__(self, therapy):
 
@@ -20,6 +21,7 @@ class Parameters:
 
 
 class ParameterGenerator:
+    """ class to generate parameter values from the selected probability distributions """
 
     def __init__(self, therapy):
 
@@ -33,7 +35,10 @@ class ParameterGenerator:
         # create Dirichlet distributions for transition probabilities
         j = 0
         for probs in Data.TRANS_MATRIX:
-            self.probMatrixRVG.append(RVGs.Dirichlet(a=probs[j:]))
+            # note:  for a Dirichlet distribution all values of the argument 'a' should be non-zero.
+            # setting if_ignore_0s to True allows the Dirichlet distribution to take 'a' with zero values.
+            self.probMatrixRVG.append(RVGs.Dirichlet(
+                a=probs, if_ignore_0s=True))
             j += 1
 
         # treatment relative risk
