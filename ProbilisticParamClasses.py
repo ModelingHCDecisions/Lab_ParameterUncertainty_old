@@ -106,16 +106,11 @@ class ParameterGenerator:
         prob_matrix = []    # probability matrix without background mortality added
         # for all health states
         for s in HealthStates:
-
-            # if the current state is death
+            # if the current state is not death
             if s not in [HealthStates.HIV_DEATH, HealthStates.NATUAL_DEATH]:
-                # create a row populated with zeroes
-                prob_matrix.append([0] * (len(HealthStates)-1))
                 # sample from the dirichlet distribution to find the transition probabilities between hiv states
-                sample = self.probMatrixRVG[s.value].sample(rng)
                 # fill in the transition probabilities out of this state
-                for j in range(len(sample)):
-                    prob_matrix[s.value][s.value + j] = sample[j]
+                prob_matrix[s.value] = self.probMatrixRVG[s.value].sample(rng)
 
         # sampled relative risk
         rr = math.exp(self.lnRelativeRiskRVG.sample(rng))
