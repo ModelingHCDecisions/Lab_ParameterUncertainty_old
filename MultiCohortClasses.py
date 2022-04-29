@@ -20,7 +20,7 @@ class MultiCohort:
         self.paramSets = []  # list of parameter sets each of which corresponds to a cohort
         self.multiCohortOutcomes = MultiCohortOutcomes()
 
-    def __populate_parameter_sets(self):
+    def _populate_parameter_sets(self):
 
         # create a parameter set generator
         param_generator = ParameterGenerator(therapy=self.therapy)
@@ -38,7 +38,7 @@ class MultiCohort:
         """
 
         # create parameter sets
-        self.__populate_parameter_sets()
+        self._populate_parameter_sets()
 
         for i in range(len(self.ids)):
             # create a cohort
