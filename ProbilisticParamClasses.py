@@ -93,11 +93,13 @@ class ParameterGenerator:
                 self.annualStateUtilityRVG.append(
                     rvgs.Beta(a=fit_output["a"], b=fit_output["b"]))
 
-    def get_new_parameters(self, rng):
+    def get_new_parameters(self, seed):
         """
-        :param rng: random number generator
+        :param seed: seed for the random number generator used to a sample of parameter values
         :return: a new parameter set
         """
+
+        rng = np.random.RandomState(seed=seed)
 
         # create a parameter set
         param = Parameters(therapy=self.therapy)

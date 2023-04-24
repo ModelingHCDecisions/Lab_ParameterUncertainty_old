@@ -80,10 +80,10 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
     # graph histograms
     hist.plot_histograms(
         data_sets=set_of_survival_times,
-        title='Histograms of Average Patient Survival Time',
+        title='Histograms of Mean Survival Time',
         x_label='Survival Time (year)',
         y_label='Counts',
-        bin_width=0.25,
+        bin_width=1,
         x_range=[5.25, 17.75],
         legends=['Mono Therapy', 'Combination Therapy'],
         color_codes=['green', 'blue'],

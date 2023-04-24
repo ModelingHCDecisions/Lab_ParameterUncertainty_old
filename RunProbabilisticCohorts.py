@@ -1,18 +1,18 @@
-import MultiCohortClasses as Cls
-import MultiCohortSupport as Support
-
 import EconEvalInputData as D
+import ProbabilisticClasses as Cls
+import ProbabilisticSupport as Support
 import ProbilisticParamClasses as P
 import deampy.plots.histogram as hist
 import deampy.plots.sample_paths as path
 
-N_COHORTS = 20              # number of cohorts
+POP_SIZE = 1000             # cohort population size
+N_COHORTS = 50              # number of cohorts
 therapy = P.Therapies.MONO  # selected therapy
 
 # create multiple cohort
 multiCohort = Cls.MultiCohort(
     ids=range(N_COHORTS),
-    pop_size=D.POP_SIZE,
+    pop_size=POP_SIZE,
     therapy=therapy)
 
 multiCohort.simulate(sim_length=D.SIM_LENGTH)
@@ -28,9 +28,10 @@ path.plot_sample_paths(
 # plot the histogram of average survival time
 hist.plot_histogram(
     data=multiCohort.multiCohortOutcomes.meanSurvivalTimes,
-    title='Histogram of Mean Survival Time',
-    x_label='Mean Survival Time (Year)',
-    y_label='Count')
+    title='Histograms of Mean Survival Time',
+    x_label='Survival Time (year)',
+    bin_width=0.5,
+    x_range=[5, 20])
 
 # print the outcomes of this simulated cohort
 Support.print_outcomes(multi_cohort_outcomes=multiCohort.multiCohortOutcomes,

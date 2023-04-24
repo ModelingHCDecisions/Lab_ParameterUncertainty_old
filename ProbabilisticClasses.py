@@ -1,5 +1,3 @@
-import numpy as np
-
 import deampy.statistics as stat
 from EconEvalMarkovModelClasses import Cohort
 from ProbilisticParamClasses import ParameterGenerator
@@ -19,32 +17,22 @@ class MultiCohort:
         self.therapy = therapy
         self.paramSets = []  # list of parameter sets each of which corresponds to a cohort
         self.multiCohortOutcomes = MultiCohortOutcomes()
-
-    def _populate_parameter_sets(self):
-
-        # create a parameter set generator
-        param_generator = ParameterGenerator(therapy=self.therapy)
-
-        # create as many sets of parameters as the number of cohorts
-        for i in range(len(self.ids)):
-            # create a new random number generator for each parameter set
-            rng = np.random.RandomState(seed=i)
-            # get and store a new set of parameter
-            self.paramSets.append(param_generator.get_new_parameters(rng=rng))
+        self.paramGenerator = ParameterGenerator(therapy=self.therapy)
 
     def simulate(self, sim_length):
         """ simulates all cohorts
         :param sim_length: simulation length
         """
 
-        # create parameter sets
-        self._populate_parameter_sets()
-
         for i in range(len(self.ids)):
+
+            # get a new set of parameter values
+            param_set = self.paramGenerator.get_new_parameters(seed=i)
+
             # create a cohort
             cohort = Cohort(id=self.ids[i],
                             pop_size=self.popSize,
-                            parameters=self.paramSets[i])
+                            parameters=param_set)
 
             # simulate the cohort
             cohort.simulate(sim_length=sim_length)
