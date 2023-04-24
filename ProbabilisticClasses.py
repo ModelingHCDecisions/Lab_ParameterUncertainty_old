@@ -1,7 +1,7 @@
 import numpy as np
 
-import SimPy.Statistics as Stat
-from MarkovModelClasses import Cohort
+import deampy.statistics as stat
+from EconEvalMarkovModelClasses import Cohort
 from ProbilisticParamClasses import ParameterGenerator
 
 
@@ -93,14 +93,14 @@ class MultiCohortOutcomes:
         """
 
         # summary statistics of mean survival time
-        self.statMeanSurvivalTime = Stat.SummaryStat(name='Average survival time',
+        self.statMeanSurvivalTime = stat.SummaryStat(name='Average survival time',
                                                      data=self.meanSurvivalTimes)
         # summary statistics of mean time to AIDS
-        self.statMeanTimeToAIDS = Stat.SummaryStat(name='Average time to AIDS',
+        self.statMeanTimeToAIDS = stat.SummaryStat(name='Average time to AIDS',
                                                    data=self.meanTimeToAIDS)
         # summary statistics of mean cost
-        self.statMeanCost = Stat.SummaryStat(name='Average cost',
+        self.statMeanCost = stat.SummaryStat(name='Average cost',
                                              data=self.meanCosts)
         # summary statistics of mean QALY
-        self.statMeanQALY = Stat.SummaryStat(name='Average QALY',
+        self.statMeanQALY = stat.SummaryStat(name='Average QALY',
                                              data=self.meanQALYs)

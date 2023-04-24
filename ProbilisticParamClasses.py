@@ -2,8 +2,8 @@ import math
 
 import scipy.stats as stat
 
-import SimPy.RandomVariateGenerators as RVGs
-from ParameterClasses import *  # import everything from the ParameterClass module
+import deampy.random_variates as rvgs
+from EconEvalParamClasses import *  # import everything from the EconEvalParamClasses module
 
 
 class Parameters:
@@ -37,7 +37,7 @@ class ParameterGenerator:
         for probs in Data.TRANS_MATRIX:
             # note:  for a Dirichlet distribution all values of the argument 'a' should be non-zero.
             # setting if_ignore_0s to True allows the Dirichlet distribution to take 'a' with zero values.
-            self.probMatrixRVG.append(RVGs.Dirichlet(
+            self.probMatrixRVG.append(rvgs.Dirichlet(
                 a=probs, if_ignore_0s=True))
             j += 1
 
@@ -51,7 +51,7 @@ class ParameterGenerator:
         std_ln_rr = \
             (math.log(rr_ci[1]) - math.log(rr_ci[0])) / (2 * stat.norm.ppf(1 - 0.05 / 2))
         # create a normal distribution for ln(RR)
-        self.lnRelativeRiskRVG = RVGs.Normal(loc=mean_ln_rr,
+        self.lnRelativeRiskRVG = rvgs.Normal(loc=mean_ln_rr,
                                              scale=std_ln_rr)
 
         # create gamma distributions for annual state cost
@@ -59,14 +59,14 @@ class ParameterGenerator:
 
             # if cost is zero, add a constant 0, otherwise add a gamma distribution
             if cost == 0:
-                self.annualStateCostRVG.append(RVGs.Constant(value=0))
+                self.annualStateCostRVG.append(rvgs.Constant(value=0))
             else:
                 # find shape and scale of the assumed gamma distribution
                 # no data available to estimate the standard deviation, so we assumed st_dev=cost / 5
-                fit_output = RVGs.Gamma.fit_mm(mean=cost, st_dev=cost / 5)
+                fit_output = rvgs.Gamma.fit_mm(mean=cost, st_dev=cost / 5)
                 # append the distribution
                 self.annualStateCostRVG.append(
-                    RVGs.Gamma(a=fit_output["a"],
+                    rvgs.Gamma(a=fit_output["a"],
                                loc=0,
                                scale=fit_output["scale"]))
 
@@ -75,8 +75,8 @@ class ParameterGenerator:
             annual_cost = Data.Zidovudine_COST
         else:
             annual_cost = Data.Zidovudine_COST + Data.Lamivudine_COST
-        fit_output = RVGs.Gamma.fit_mm(mean=annual_cost, st_dev=annual_cost / 5)
-        self.annualTreatmentCostRVG = RVGs.Gamma(a=fit_output["a"],
+        fit_output = rvgs.Gamma.fit_mm(mean=annual_cost, st_dev=annual_cost / 5)
+        self.annualTreatmentCostRVG = rvgs.Gamma(a=fit_output["a"],
                                                  loc=0,
                                                  scale=fit_output["scale"])
 
@@ -84,14 +84,14 @@ class ParameterGenerator:
         for utility in Data.ANNUAL_STATE_UTILITY:
             # if utility is zero, add a constant 0, otherwise add a beta distribution
             if utility == 0:
-                self.annualStateCostRVG.append(RVGs.Constant(value=0))
+                self.annualStateCostRVG.append(rvgs.Constant(value=0))
             else:
                 # find alpha and beta of the assumed beta distribution
                 # no data available to estimate the standard deviation, so we assumed st_dev=cost / 4
-                fit_output = RVGs.Beta.fit_mm(mean=utility, st_dev=utility / 4)
+                fit_output = rvgs.Beta.fit_mm(mean=utility, st_dev=utility / 4)
                 # append the distribution
                 self.annualStateUtilityRVG.append(
-                    RVGs.Beta(a=fit_output["a"], b=fit_output["b"]))
+                    rvgs.Beta(a=fit_output["a"], b=fit_output["b"]))
 
     def get_new_parameters(self, rng):
         """

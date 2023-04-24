@@ -1,8 +1,8 @@
-import InputData as D
-import SimPy.EconEval as Econ
-import SimPy.Plots.Histogram as Hist
-import SimPy.Plots.SamplePaths as Path
-import SimPy.Statistics as Stat
+import EconEvalInputData as D
+import deampy.econ_eval as econ
+import deampy.plots.histogram as hist
+import deampy.plots.sample_paths as path
+import deampy.statistics as stat
 
 
 def print_outcomes(multi_cohort_outcomes, therapy_name):
@@ -61,7 +61,7 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
     ]
 
     # graph survival curve
-    Path.plot_sets_of_sample_paths(
+    path.plot_sets_of_sample_paths(
         sets_of_sample_paths=sets_of_survival_curves,
         title='Survival Curves',
         x_label='Simulation Time Step (year)',
@@ -78,7 +78,7 @@ def plot_survival_curves_and_histograms(multi_cohort_outcomes_mono, multi_cohort
     ]
 
     # graph histograms
-    Hist.plot_histograms(
+    hist.plot_histograms(
         data_sets=set_of_survival_times,
         title='Histograms of Average Patient Survival Time',
         x_label='Survival Time (year)',
@@ -99,7 +99,7 @@ def print_comparative_outcomes(multi_cohort_outcomes_mono, multi_cohort_outcomes
     """
 
     # increase in mean survival time under combination therapy with respect to mono therapy
-    increase_mean_survival_time = Stat.DifferenceStatPaired(
+    increase_mean_survival_time = stat.DifferenceStatPaired(
         name='Increase in mean survival time',
         x=multi_cohort_outcomes_combo.meanSurvivalTimes,
         y_ref=multi_cohort_outcomes_mono.meanSurvivalTimes)
@@ -113,7 +113,7 @@ def print_comparative_outcomes(multi_cohort_outcomes_mono, multi_cohort_outcomes
           estimate_PI)
 
     # increase in mean discounted cost under combination therapy with respect to mono therapy
-    increase_mean_discounted_cost = Stat.DifferenceStatPaired(
+    increase_mean_discounted_cost = stat.DifferenceStatPaired(
         name='Increase in mean discounted cost',
         x=multi_cohort_outcomes_combo.meanCosts,
         y_ref=multi_cohort_outcomes_mono.meanCosts)
@@ -128,7 +128,7 @@ def print_comparative_outcomes(multi_cohort_outcomes_mono, multi_cohort_outcomes
           estimate_PI)
 
     # increase in mean discounted QALY under combination therapy with respect to mono therapy
-    increase_mean_discounted_qaly = Stat.DifferenceStatPaired(
+    increase_mean_discounted_qaly = stat.DifferenceStatPaired(
         name='Increase in mean discounted QALY',
         x=multi_cohort_outcomes_combo.meanQALYs,
         y_ref=multi_cohort_outcomes_mono.meanQALYs)
@@ -149,13 +149,13 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
     """
 
     # define two strategies
-    mono_therapy_strategy = Econ.Strategy(
+    mono_therapy_strategy = econ.Strategy(
         name='Mono Therapy',
         cost_obs=multi_cohort_outcomes_mono.meanCosts,
         effect_obs=multi_cohort_outcomes_mono.meanQALYs,
         color='green'
     )
-    combo_therapy_strategy = Econ.Strategy(
+    combo_therapy_strategy = econ.Strategy(
         name='Combination Therapy',
         cost_obs=multi_cohort_outcomes_combo.meanCosts,
         effect_obs=multi_cohort_outcomes_combo.meanQALYs,
@@ -163,7 +163,7 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
     )
 
     # do CEA
-    CEA = Econ.CEA(
+    CEA = econ.CEA(
         strategies=[mono_therapy_strategy, combo_therapy_strategy],
         if_paired=True
     )
@@ -179,7 +179,8 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
 
     # report the CE table
     CEA.build_CE_table(
-        interval_type='p',  # uncertainty (projection) interval
+        interval_type='p',  # uncertainty (projection) interval for cost and effect estimates
+                            # for ICER, confidence interval will be reported.
         alpha=D.ALPHA,
         cost_digits=0,
         effect_digits=2,
@@ -187,17 +188,17 @@ def report_CEA_CBA(multi_cohort_outcomes_mono, multi_cohort_outcomes_combo):
         file_name='CETable.csv')
 
     # CBA
-    NBA = Econ.CBA(
+    NBA = econ.CBA(
         strategies=[mono_therapy_strategy, combo_therapy_strategy],
         wtp_range=(0, 50000),
         if_paired=True
     )
     # show the net monetary benefit figure
-    NBA.plot_incremental_nmbs(
+    NBA.plot_marginal_nmb_lines(
         title='Cost-Benefit Analysis',
         x_label='Willingness-To-Pay for One Additional QALY ($)',
         y_label='Incremental Net Monetary Benefit ($)',
-        interval_type='p',
+        interval_type='c', # show confidence interval
         show_legend=True,
         figure_size=(6, 5),
     )

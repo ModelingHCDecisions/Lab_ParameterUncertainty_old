@@ -1,10 +1,10 @@
-import InputData as D
-import MultiCohortClasses as Cls
-import MultiCohortSupport as Support
+import EconEvalInputData as D
+import ProbabilisticClasses as Cls
+import ProbabilisticSupport as Support
 import ProbilisticParamClasses as P
 
 N_COHORTS = 200  # number of cohorts
-POP_SIZE = 100 # population size of each cohort
+POP_SIZE = 500  # population size of each cohort
 
 # create a multi-cohort to simulate under mono therapy
 multiCohortMono = Cls.MultiCohort(
